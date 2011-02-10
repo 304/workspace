@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openbox_menu xmlns="http://openbox.org/3.4/menu">
+	<menu id="apps-term-menu" label="Terminals">
+		<item label="Konsole">
+			<action name="Execute">
+				<command>
+					konsole
+				</command>
+				<startupnotify>
+					<enabled>
+						yes
+					</enabled>
+				</startupnotify>
+			</action>
+		</item>
+	</menu>
+	<menu id="apps-net-menu" label="Internet">
+		<item label="Firefox">
+			<action name="Execute">
+				<command>
+					firefox
+				</command>
+				<startupnotify>
+					<enabled>
+						yes
+					</enabled>
+					<wmclass>
+						Firefox
+					</wmclass>
+				</startupnotify>
+			</action>
+		</item>
+		<item label="Opera">
+			<action name="Execute">
+				<command>
+					opera
+				</command>
+				<startupnotify>
+					<enabled>
+						yes
+					</enabled>
+					<wmclass>
+						Opera
+					</wmclass>
+				</startupnotify>
+			</action>
+		</item>
+	</menu>
+	<menu id="apps-office-menu" label="Office">
+		<item label="OpenOffice Calc">
+			<action name="Execute">
+				<command>
+					soffice -calc
+				</command>
+			</action>
+		</item>
+		<item label="OpenOffice Writer">
+			<action name="Execute">
+				<command>
+					soffice -writer
+				</command>
+			</action>
+		</item>
+		<item label="Word">
+			<action name="Execute">
+				<command>
+				  wine ~/.wine/drive_c/Program\ Files/Microsoft\ Office/OFFICE11/WINWORD.EXE
+				</command>
+			</action>
+		</item>
+		<item label="Excel">
+			<action name="Execute">
+				<command>
+				  wine ~/.wine/drive_c/Program\ Files/Microsoft\ Office/OFFICE11/EXCEL.EXE
+				</command>
+			</action>
+		</item>
+	</menu>
+	<menu id="root-menu" label="Openbox 3">
+		<item label="Netbeans">
+			<action name="Execute">
+				<execute>
+					/home/java/netbeans-6.9/bin/netbeans --jdkhome /opt/java
+				</execute>
+			</action>
+		</item>
+		<item label="SIP">
+			<action name="Execute">
+				<execute>
+					twinkle
+				</execute>
+			</action>
+		</item>
+		<item label="Kwrite">
+			<action name="Execute">
+				<execute>
+					kwrite
+				</execute>
+			</action>
+		</item>
+		<item label="ICQ">
+			<action name="Execute">
+				<execute>
+					qutim
+				</execute>
+			</action>
+		</item>
+		<item label="Emacs">
+			<action name="Execute">
+				<execute>
+					emacs --geometry 158x53
+				</execute>
+			</action>
+		</item>
+		<item label="Thunderbird">
+			<action name="Execute">
+				<execute>
+					thunderbird
+				</execute>
+			</action>
+		</item>
+		<item label="Krusader">
+			<action name="Execute">
+				<execute>
+					krusader
+				</execute>
+			</action>
+		</item>
+		<item label="skype">
+			<action name="Execute">
+				<execute>
+					skype
+				</execute>
+			</action>
+		</item>
+		<menu execute="python2.7 feeder.py" id="pipe-413228" label="RSS"/>
+		<menu execute="python2.7 pipe-weather.py Yekaterinburg" id="pipe-252151" label="Weather"/>
+		<separator label="Applications"/>
+		<menu id="apps-accessories-menu"/>
+		<menu id="apps-editors-menu"/>
+		<menu id="apps-graphics-menu"/>
+		<menu id="apps-net-menu"/>
+		<menu id="apps-office-menu"/>
+		<menu id="apps-multimedia-menu"/>
+		<menu id="apps-term-menu"/>
+		<menu id="apps-fileman-menu"/>
+		<separator label="System"/>
+		<menu id="system-menu"/>
+		<separator/>
+		<item label="Lock">
+			<action name="Execute">
+				<execute>
+					slock
+				</execute>
+			</action>
+		</item>
+		<separator/>
+		<item label="Log Out">
+			<action name="Exit">
+				<prompt>
+					yes
+				</prompt>
+			</action>
+		</item>
+	</menu>
+</openbox_menu>
