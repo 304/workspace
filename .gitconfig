@@ -1,0 +1,19 @@
+[color]
+	diff = auto
+	status = auto
+	branch = auto
+	ui = auto
+
+[color "branch"]
+        current = red reverse
+        local = yellow
+        remote = green
+
+[core]
+	excludesfile = .ht*
+
+[status]
+    color = auto
+
+[alias]
+    lg = log --graph '--pretty=tformat:%Cblue%h%Creset %Cgreen%ar%Creset %Cblue%d%Creset %s'
