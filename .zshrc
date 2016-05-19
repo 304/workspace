@@ -4,6 +4,8 @@ HISTSIZE=1000
 SAVEHIST=1000
 bindkey -e
 
+autoload -U select-word-style
+select-word-style bash
 
 zstyle :compinstall filename '/home/java/.zshrc'
 
