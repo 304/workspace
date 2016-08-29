@@ -415,3 +415,14 @@ This function is only necessary in window system."
 
 (eval-after-load 'company
   '(push 'company-robe company-backends))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Remap command and meta keys for macos                            ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Options: 'control, 'alt, 'meta, 'super, 'hyper
+
+
+;(setq mac-option-modifier 'super)
+;(setq mac-command-modifier 'meta)
+;(setq ns-function-modifier 'control)
