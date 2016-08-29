@@ -100,8 +100,8 @@ This function is only necessary in window system."
 ;; Load Env Variables                                               ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(when (memq window-system '(mac ns))
-  (exec-path-from-shell-initialize))
+;(when (memq window-system '(mac ns))
+;  (exec-path-from-shell-initialize))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -330,7 +330,7 @@ This function is only necessary in window system."
 ;; wgrep - Edit Ack-Mode                                            ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(require 'wgrep)
+;(require 'wgrep)
 
 
 
