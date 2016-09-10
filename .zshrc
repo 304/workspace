@@ -12,9 +12,7 @@ zstyle :compinstall filename '/home/java/.zshrc'
 export PYTHONDOCS=/usr/share/doc/python/html/
 
 PROMPT=$'%{\e[1;32m%}%T %{\e[0m%}%m %{\e[0;36m%}[%{\e[1;36m%}%c%{\e[0;36m%}]%{\e[1;35m%}%#%{\e[0m%} '
-alias py=ipython
-alias ls='ls --color'
-alias xvnc='x11vnc -notruecolor -forever -display :0 -usepw'
+alias ls='ls -Gp'
 alias cp='cp -v'
 alias grep='grep --color=auto'
 autoload -Uz compinit
