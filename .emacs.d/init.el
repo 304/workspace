@@ -23,7 +23,6 @@
 
 (package-initialize)
 
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Copy and Paste Tricks for OSX                                    ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -221,7 +220,7 @@ This function is only necessary in window system."
 ;; Remove Tool-Bar                                                  ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(tool-bar-mode -99)
+;(tool-bar-mode -99)
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -353,7 +352,7 @@ This function is only necessary in window system."
 ;; Start Emacs Server                                               ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(server-start)
+;(server-start)
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -421,8 +420,13 @@ This function is only necessary in window system."
 ;; Remap command and meta keys for macos                            ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Options: 'control, 'alt, 'meta, 'super, 'hyper
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
 
 
-;(setq mac-option-modifier 'super)
-;(setq mac-command-modifier 'meta)
-;(setq ns-function-modifier 'control)
+; Save backups to a separate dir
+(setq backup-directory-alist `(("." . "~/.saves")))
