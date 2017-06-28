@@ -5,7 +5,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (add-to-list 'package-archives
-  '("melpa" . "http://melpa.milkbox.net/packages/") t)
+  '("melpa" . "https://melpa.org/packages/") t)
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -53,6 +53,26 @@ This function is only necessary in window system."
   (pasteboard-copy)
   (delete-region (region-beginning) (region-end)))
 
+(defun duplicate-current-line-or-region (arg)
+  "Duplicates the current line or region ARG times."
+  (interactive "p")
+  (let (beg end (origin (point)))
+    (if (and mark-active (> (point) (mark)))
+        (exchange-point-and-mark))
+    (setq beg (line-beginning-position))
+    (if mark-active
+        (exchange-point-and-mark))
+    (setq end (line-end-position))
+    (let ((region (buffer-substring-no-properties beg end)))
+      (dotimes (i arg)
+        (goto-char end)
+        (newline)
+        (insert region)
+        (setq end (point)))
+      (goto-char (+ origin (* (length region) arg) arg)))))
+
+(global-set-key (kbd "C-c C-d") 'duplicate-current-line-or-region)
+
 (if window-system
     (progn
       (isolate-kill-ring)
@@ -69,6 +89,13 @@ This function is only necessary in window system."
   )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;  Set font                                                        ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(set-default-font "Monaco 12")
+(global-set-key (kbd "C-+") 'text-scale-increase)
+(global-set-key (kbd "C--") 'text-scale-decrease)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;  Install Packages                                                ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -76,18 +103,23 @@ This function is only necessary in window system."
   (package-refresh-contents))
 
 (defvar my-packages '(
+  anzu
   browse-kill-ring
   coffee-mode
   company
   flx-ido
   haml-mode
   ido-vertical-mode
-  monokai-theme
+  atom-one-dark-theme
   multiple-cursors
   projectile
   sass-mode
   web-mode
+  neotree
   ag
+  exec-path-from-shell
+  magit
+  real-auto-save
   yaml-mode))
 
 (dolist (p my-packages)
@@ -98,10 +130,14 @@ This function is only necessary in window system."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Load Env Variables                                               ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(require 'exec-path-from-shell)
 
-;(when (memq window-system '(mac ns))
-;  (exec-path-from-shell-initialize))
+(when (memq window-system '(mac ns x))
+  (exec-path-from-shell-initialize))
 
+
+
+(windmove-default-keybindings 'meta)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Remove Start-Up Screen                                           ;;
@@ -112,6 +148,20 @@ This function is only necessary in window system."
 
 ;; IBUFFER
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Real auto save                                                   ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(add-hook 'focus-out-hook 'save-buffer)
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Magit                                                            ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(global-set-key (kbd "s-m") nil)
+(global-set-key (kbd "s-m s") 'magit-status)
+(global-set-key (kbd "s-m f") 'magit-log-buffer-file)
+(global-set-key (kbd "s-m b") 'magit-blame)
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Confirm Emacs Exit                                               ;;
@@ -120,12 +170,19 @@ This function is only necessary in window system."
 (setq confirm-kill-emacs 'y-or-n-p)
 
 
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Disable *Messages* Buffer                                        ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (setq-default message-log-max nil)
 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Anzu - Show Number of Ocurrences in a Search in the Mode-Line    ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(global-anzu-mode +1)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Disable *Completion* Buffer                                      ;;
@@ -220,7 +277,7 @@ This function is only necessary in window system."
 ;; Remove Tool-Bar                                                  ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;(tool-bar-mode -99)
+(tool-bar-mode -99)
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -272,6 +329,9 @@ This function is only necessary in window system."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(custom-safe-themes
+   (quote
+    ("08b8807d23c290c840bbb14614a83878529359eaba1805618b3be7d61b0b0a32" "67e998c3c23fe24ed0fb92b9de75011b92f35d3e89344157ae0d544d50a63a72" "ff7625ad8aa2615eae96d6b4469fcc7d3d20b2e1ebc63b761a349bebbb9d23cb" default)))
  '(grep-highlight-matches (quote auto))
  '(ido-enable-flex-matching t)
  '(ido-mode (quote both) nil (ido))
@@ -279,6 +339,9 @@ This function is only necessary in window system."
  '(js-indent-level 2)
  '(list-matching-lines-default-context-lines 1)
  '(magit-diff-use-overlays nil)
+ '(package-selected-packages
+   (quote
+    (magit real-auto-save atom-one-dark-theme zenburn-theme dracula-theme yaml-mode ag web-mode sass-mode projectile multiple-cursors monokai-theme ido-vertical-mode haml-mode flx-ido company coffee-mode browse-kill-ring)))
  '(ruby-align-to-stmt-keywords t)
  '(standard-indent 2))
 
@@ -310,10 +373,10 @@ This function is only necessary in window system."
 ;; Themes                                                           ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(load-theme 'monokai t)
+(load-theme 'atom-one-dark t)
 
 ;; Set Region Background Color
-(set-face-attribute 'region nil :background "#666")
+;;(set-face-attribute 'region nil :background "#666")
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -352,7 +415,7 @@ This function is only necessary in window system."
 ;; Start Emacs Server                                               ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;(server-start)
+(server-start)
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -417,9 +480,27 @@ This function is only necessary in window system."
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Ag                                                               ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(setq ag-reuse-window 't)
+(setq ag-reuse-buffers 't)
+(setq ag-highlight-search t)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Neo Tree                                                         ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(require 'neotree)
+(setq neo-smart-open t)
+(setq projectile-switch-project-action 'neotree-projectile-action)
+(global-set-key (kbd "C-|") 'neotree-show)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Remap command and meta keys for macos                            ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Options: 'control, 'alt, 'meta, 'super, 'hyper
+(setq mac-command-modifier 'meta)
+(setq mac-option-modifier 'super)
+
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -430,3 +511,8 @@ This function is only necessary in window system."
 
 ; Save backups to a separate dir
 (setq backup-directory-alist `(("." . "~/.saves")))
+
+(setq backup-directory-alist
+      `((".*" . ,temporary-file-directory)))
+(setq auto-save-file-name-transforms
+      `((".*" ,temporary-file-directory t)))
