@@ -34,6 +34,18 @@ This function is only necessary in window system."
   (setq interprogram-cut-function nil)
   (setq interprogram-paste-function nil))
 
+(defun clip-file()
+  "Put the current file name on the clipboard"
+  (interactive)
+  (let ((filename (if (equal major-mode 'dired-mode)
+                      (file-name-directory default-directory)
+                    (buffer-file-name))))
+    (when filename
+      (x-select-text
+       (concat
+        (replace-regexp-in-string ".+?/projects/.+?/" "" filename)
+        ":"
+        (number-to-string (1+ (count-lines 1 (point)))))))))
 
 (defun pasteboard-copy()
   "Copy region to OS X system pasteboard."
@@ -71,7 +83,15 @@ This function is only necessary in window system."
         (setq end (point)))
       (goto-char (+ origin (* (length region) arg) arg)))))
 
+(defun goto-and-recenter()
+  "Goto line and center it"
+  (interactive)
+  (call-interactively 'goto-line)
+  (recenter-top-bottom))
+
 (global-set-key (kbd "C-c C-d") 'duplicate-current-line-or-region)
+(global-set-key (kbd "C-c C-c") 'clip-file)
+(global-set-key (kbd "C-c C-g") 'goto-and-recenter)
 
 (if window-system
     (progn
@@ -107,16 +127,20 @@ This function is only necessary in window system."
   browse-kill-ring
   coffee-mode
   company
+  company-flx
   flx-ido
   haml-mode
   ido-vertical-mode
   atom-one-dark-theme
   multiple-cursors
   projectile
+  bundler
+  which-key
   sass-mode
   web-mode
   neotree
   ag
+  rspec-mode
   exec-path-from-shell
   magit
   real-auto-save
@@ -341,7 +365,7 @@ This function is only necessary in window system."
  '(magit-diff-use-overlays nil)
  '(package-selected-packages
    (quote
-    (magit real-auto-save atom-one-dark-theme zenburn-theme dracula-theme yaml-mode ag web-mode sass-mode projectile multiple-cursors monokai-theme ido-vertical-mode haml-mode flx-ido company coffee-mode browse-kill-ring)))
+    (company-flx which-key bundler rspec-mode magit real-auto-save atom-one-dark-theme zenburn-theme dracula-theme yaml-mode ag web-mode sass-mode projectile multiple-cursors monokai-theme ido-vertical-mode haml-mode flx-ido company coffee-mode browse-kill-ring)))
  '(ruby-align-to-stmt-keywords t)
  '(standard-indent 2))
 
@@ -389,12 +413,24 @@ This function is only necessary in window system."
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; wgrep - Edit Ack-Mode                                            ;;
+;; Rspec-mode                                                       ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(require 'rspec-mode)
 
-;(require 'wgrep)
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Which-key                                                        ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(require 'which-key)
+(which-key-mode)
+(which-key-setup-side-window-right)
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Bundler                                                          ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(require 'bundler)
+(global-set-key (kbd "C-c i") 'bundle-install)
+(global-set-key (kbd "C-c c") 'bundle-console)
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -441,7 +477,7 @@ This function is only necessary in window system."
 
 (projectile-global-mode)
 (setq projectile-enable-caching t)
-
+(setq projectile-switch-project-action 'projectile-dired)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Web-Mode - major-mode for editing web templates                  ;;
@@ -469,7 +505,10 @@ This function is only necessary in window system."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (add-hook 'after-init-hook 'global-company-mode)
+(global-set-key (kbd "C-SPC") 'company-complete)
 
+(with-eval-after-load 'company
+  (company-flx-mode +1))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Company-Mode + Robe                                              ;;
@@ -477,6 +516,9 @@ This function is only necessary in window system."
 
 (eval-after-load 'company
   '(push 'company-robe company-backends))
+
+(eval-after-load 'company
+  '(push 'company-capf company-backends))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
