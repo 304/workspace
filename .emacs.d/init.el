@@ -143,6 +143,7 @@ This function is only necessary in window system."
   rspec-mode
   exec-path-from-shell
   magit
+  nyan-mode
   real-auto-save
   yaml-mode))
 
@@ -176,7 +177,18 @@ This function is only necessary in window system."
 ;; Real auto save                                                   ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (add-hook 'focus-out-hook 'save-buffer)
-
+(defadvice switch-to-buffer (before save-buffer-now activate)
+  (when buffer-file-name (save-buffer)))
+(defadvice other-window (before other-window-now activate)
+  (when buffer-file-name (save-buffer)))
+(defadvice windmove-up (before other-window-now activate)
+  (when buffer-file-name (save-buffer)))
+(defadvice windmove-down (before other-window-now activate)
+  (when buffer-file-name (save-buffer)))
+(defadvice windmove-left (before other-window-now activate)
+  (when buffer-file-name (save-buffer)))
+(defadvice windmove-right (before other-window-now activate)
+  (when buffer-file-name (save-buffer)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Magit                                                            ;;
@@ -194,6 +206,21 @@ This function is only necessary in window system."
 (setq confirm-kill-emacs 'y-or-n-p)
 
 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Scroll bar settings                                              ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(scroll-bar-mode -1)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Nyan-mode                                                        ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(require 'nyan-mode)
+(nyan-mode)
+(nyan-start-animation)
+(nyan-toggle-wavy-trail)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Disable *Messages* Buffer                                        ;;
@@ -370,7 +397,7 @@ This function is only necessary in window system."
  '(magit-diff-use-overlays nil)
  '(package-selected-packages
    (quote
-    (company-flx which-key bundler rspec-mode magit real-auto-save atom-one-dark-theme zenburn-theme dracula-theme yaml-mode ag web-mode sass-mode projectile multiple-cursors monokai-theme ido-vertical-mode haml-mode flx-ido company coffee-mode browse-kill-ring)))
+    (enh-ruby-mode nyan-mode company-flx which-key bundler rspec-mode magit real-auto-save atom-one-dark-theme zenburn-theme dracula-theme yaml-mode ag web-mode sass-mode projectile multiple-cursors monokai-theme ido-vertical-mode haml-mode flx-ido company coffee-mode browse-kill-ring)))
  '(ruby-align-to-stmt-keywords t)
  '(standard-indent 2))
 
@@ -417,13 +444,7 @@ This function is only necessary in window system."
     ad-do-it))
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Rspec-mode                                                       ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(require 'rspec-mode)
-(add-hook 'ruby-mode-hook 'rspec-mode)
-(add-hook 'after-init-hook 'inf-ruby-switch-setup)
-(setq compilation-scroll-output t)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Which-key                                                        ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -505,7 +526,6 @@ This function is only necessary in window system."
 
 (add-hook 'ruby-mode-hook 'robe-mode)
 
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Company-Mode                                                     ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -541,6 +561,24 @@ This function is only necessary in window system."
 (setq neo-smart-open t)
 (setq projectile-switch-project-action 'neotree-projectile-action)
 (global-set-key (kbd "C-|") 'neotree-show)
+(global-set-key [f8] 'neotree-toggle)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Rspec-mode                                                       ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(require 'rspec-mode)
+(add-hook 'ruby-mode-hook 'rspec-mode)
+(setq compilation-scroll-output t)
+(setq rspec-use-spring-when-possible nil)
+
+;; (after-load 'enh-ruby-mode
+;;   (add-hook 'enh-ruby-mode-hook
+;;             (lambda ()
+;;               (unless (derived-mode-p 'prog-mode)
+;;                 (run-hooks 'prog-mode-hook))))
+;;   (add-hook 'ruby-mode-hook 'rspec-mode))
+
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Remap command and meta keys for macos                            ;;
@@ -554,7 +592,7 @@ This function is only necessary in window system."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(enh-ruby-op-face ((t nil))))
 
 
 ; Save backups to a separate dir
