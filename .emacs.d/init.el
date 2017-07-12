@@ -149,6 +149,7 @@ This function is only necessary in window system."
   multiple-cursors
   expand-region
   ace-jump-mode
+  fill-column-indicator
   yaml-mode))
 
 (dolist (p my-packages)
@@ -198,9 +199,9 @@ This function is only necessary in window system."
 ;; Magit                                                            ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (global-set-key (kbd "s-m") nil)
-(global-set-key (kbd "s-m s") 'magit-status)
-(global-set-key (kbd "s-m f") 'magit-log-buffer-file)
-(global-set-key (kbd "s-m b") 'magit-blame)
+(global-set-key (kbd "C-c g") 'magit-status)
+(global-set-key (kbd "C-c f") 'magit-log-buffer-file)
+(global-set-key (kbd "C-c b") 'magit-blame)
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -401,7 +402,7 @@ This function is only necessary in window system."
  '(magit-diff-use-overlays nil)
  '(package-selected-packages
    (quote
-    (expand-region mark-multiple color-theme-sanityinc-tomorrow zenburn solarized-theme doom-themes ace-jump-mode smartparens ruby-tools minimap enh-ruby-mode nyan-mode company-flx which-key bundler rspec-mode magit real-auto-save atom-one-dark-theme zenburn-theme dracula-theme yaml-mode ag web-mode sass-mode projectile multiple-cursors monokai-theme ido-vertical-mode haml-mode flx-ido company coffee-mode browse-kill-ring)))
+    (fill-column-indicator flyspell-correct expand-region mark-multiple color-theme-sanityinc-tomorrow zenburn solarized-theme doom-themes ace-jump-mode smartparens ruby-tools minimap enh-ruby-mode nyan-mode company-flx which-key bundler rspec-mode magit real-auto-save atom-one-dark-theme zenburn-theme dracula-theme yaml-mode ag web-mode sass-mode projectile multiple-cursors monokai-theme ido-vertical-mode haml-mode flx-ido company coffee-mode browse-kill-ring)))
  '(ruby-align-to-stmt-keywords t)
  '(standard-indent 2))
 
@@ -600,6 +601,17 @@ This function is only necessary in window system."
 ;; Expand region                                                    ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (global-set-key (kbd "C-@") 'er/expand-region)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Fill column indication                                           ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(require 'fill-column-indicator)
+(add-hook 'prog-mode-hook 'fci-mode)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Comments                                                         ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(global-set-key (kbd "M-;") 'comment-line)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Remap command and meta keys for macos                            ;;
