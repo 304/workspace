@@ -89,6 +89,8 @@ This function is only necessary in window system."
   (call-interactively 'goto-line)
   (recenter-top-bottom))
 
+(require 'move-text)
+
 (defun move-line-up()
   (interactive)
   (transpose-lines 1)
@@ -103,8 +105,8 @@ This function is only necessary in window system."
 (global-set-key (kbd "C-c C-d") 'duplicate-current-line-or-region)
 (global-set-key (kbd "C-c C-c") 'clip-file)
 (global-set-key (kbd "C-c C-g") 'goto-and-recenter)
-(global-set-key (kbd "s-<up>") 'move-line-up)
-(global-set-key (kbd "s-<down>") 'move-line-down)
+(global-set-key (kbd "s-<up>") 'move-text-up)
+(global-set-key (kbd "s-<down>") 'move-text-down)
 (global-set-key (kbd "C-c C-t") 'term)
 
 (if window-system
@@ -161,6 +163,7 @@ This function is only necessary in window system."
   magit
   nyan-mode
   ruby-tools
+  move-text
   real-auto-save
   multiple-cursors
   expand-region
@@ -422,7 +425,7 @@ This function is only necessary in window system."
  '(magit-diff-use-overlays nil)
  '(package-selected-packages
    (quote
-    (focus-autosave-mode robe markdown-mode elixir-mode window-purpose fill-column-indicator flyspell-correct expand-region mark-multiple color-theme-sanityinc-tomorrow zenburn solarized-theme doom-themes ace-jump-mode smartparens ruby-tools minimap enh-ruby-mode nyan-mode company-flx which-key bundler rspec-mode magit real-auto-save atom-one-dark-theme zenburn-theme dracula-theme yaml-mode ag web-mode sass-mode projectile multiple-cursors monokai-theme ido-vertical-mode haml-mode flx-ido company coffee-mode browse-kill-ring)))
+    (move-text move-line focus-autosave-mode robe markdown-mode elixir-mode window-purpose fill-column-indicator flyspell-correct expand-region mark-multiple color-theme-sanityinc-tomorrow zenburn solarized-theme doom-themes ace-jump-mode smartparens ruby-tools minimap enh-ruby-mode nyan-mode company-flx which-key bundler rspec-mode magit real-auto-save atom-one-dark-theme zenburn-theme dracula-theme yaml-mode ag web-mode sass-mode projectile multiple-cursors monokai-theme ido-vertical-mode haml-mode flx-ido company coffee-mode browse-kill-ring)))
  '(ruby-align-to-stmt-keywords t)
  '(standard-indent 2))
 
@@ -650,6 +653,12 @@ This function is only necessary in window system."
 ;; Comments                                                         ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (global-set-key (kbd "M-;") 'comment-line)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Terminal                                                         ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(setq explicit-shell-file-name "/bin/zsh")
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Purpose                                                          ;;
