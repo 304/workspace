@@ -89,9 +89,23 @@ This function is only necessary in window system."
   (call-interactively 'goto-line)
   (recenter-top-bottom))
 
+(defun move-line-up()
+  (interactive)
+  (transpose-lines 1)
+  (forward-line -2))
+
+(defun move-line-down()
+  (interactive)
+  (forward-line 1)
+  (transpose-lines 1)
+  (forward-line -1))
+
 (global-set-key (kbd "C-c C-d") 'duplicate-current-line-or-region)
 (global-set-key (kbd "C-c C-c") 'clip-file)
 (global-set-key (kbd "C-c C-g") 'goto-and-recenter)
+(global-set-key (kbd "s-<up>") 'move-line-up)
+(global-set-key (kbd "s-<down>") 'move-line-down)
+(global-set-key (kbd "C-c C-t") 'term)
 
 (if window-system
     (progn
@@ -140,7 +154,9 @@ This function is only necessary in window system."
   web-mode
   neotree
   ag
+  robe
   rspec-mode
+  focus-autosave-mode
   exec-path-from-shell
   magit
   nyan-mode
@@ -181,7 +197,11 @@ This function is only necessary in window system."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Real auto save                                                   ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(add-hook 'focus-out-hook 'save-buffer)
+;;(add-hook 'focus-out-hook 'save-buffer)
+
+(require 'focus-autosave-mode)
+(focus-autosave-mode 1)
+
 (defadvice switch-to-buffer (before save-buffer-now activate)
   (when buffer-file-name (save-buffer)))
 (defadvice other-window (before other-window-now activate)
@@ -402,7 +422,7 @@ This function is only necessary in window system."
  '(magit-diff-use-overlays nil)
  '(package-selected-packages
    (quote
-    (fill-column-indicator flyspell-correct expand-region mark-multiple color-theme-sanityinc-tomorrow zenburn solarized-theme doom-themes ace-jump-mode smartparens ruby-tools minimap enh-ruby-mode nyan-mode company-flx which-key bundler rspec-mode magit real-auto-save atom-one-dark-theme zenburn-theme dracula-theme yaml-mode ag web-mode sass-mode projectile multiple-cursors monokai-theme ido-vertical-mode haml-mode flx-ido company coffee-mode browse-kill-ring)))
+    (focus-autosave-mode robe markdown-mode elixir-mode window-purpose fill-column-indicator flyspell-correct expand-region mark-multiple color-theme-sanityinc-tomorrow zenburn solarized-theme doom-themes ace-jump-mode smartparens ruby-tools minimap enh-ruby-mode nyan-mode company-flx which-key bundler rspec-mode magit real-auto-save atom-one-dark-theme zenburn-theme dracula-theme yaml-mode ag web-mode sass-mode projectile multiple-cursors monokai-theme ido-vertical-mode haml-mode flx-ido company coffee-mode browse-kill-ring)))
  '(ruby-align-to-stmt-keywords t)
  '(standard-indent 2))
 
@@ -529,8 +549,8 @@ This function is only necessary in window system."
 ;; Robe - Code Navigation for Ruby                                  ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(add-hook 'ruby-mode-hook 'robe-mode)
-;;(add-hook 'enh-ruby-mode-hook 'robe-mode)
+;(add-hook 'ruby-mode-hook 'robe-mode)
+;(add-hook 'enh-ruby-mode-hook 'robe-mode)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Company-Mode                                                     ;;
@@ -574,6 +594,7 @@ This function is only necessary in window system."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (require 'ruby-tools)
 (add-hook 'ruby-mode-hook 'ruby-tools-mode)
+;(add-hook 'enh-ruby-mode-hook 'ruby-tools-mode)
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -581,6 +602,7 @@ This function is only necessary in window system."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (require 'rspec-mode)
 (add-hook 'ruby-mode-hook 'rspec-mode)
+;(add-hook 'enh-ruby-mode-hook 'rspec-mode)
 (setq compilation-scroll-output t)
 (setq rspec-use-spring-when-possible nil)
 
@@ -606,12 +628,38 @@ This function is only necessary in window system."
 ;; Fill column indication                                           ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (require 'fill-column-indicator)
+(setq fci-rule-column 80)
 (add-hook 'prog-mode-hook 'fci-mode)
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Enh-ruby-mode                                                    ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; (require 'enh-ruby-mode)
+;; (add-to-list 'auto-mode-alist '("\\.rb$" . enh-ruby-mode))
+;; (add-to-list 'auto-mode-alist '("\\.rake$" . enh-ruby-mode))
+;; (add-to-list 'auto-mode-alist '("Rakefile$" . enh-ruby-mode))
+;; (add-to-list 'auto-mode-alist '("\\.gemspec$" . enh-ruby-mode))
+;; (add-to-list 'auto-mode-alist '("\\.ru$" . enh-ruby-mode))
+;; (add-to-list 'auto-mode-alist '("Gemfile$" . enh-ruby-mode))
+
+;; (eval-after-load 'enh-ruby-mode
+;;  '(remove-hook 'enh-ruby-mode-hook 'erm-define-faces))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Comments                                                         ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (global-set-key (kbd "M-;") 'comment-line)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Purpose                                                          ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(require 'window-purpose)
+;(purpose-mode)
+
+;(add-to-list 'purpose-user-mode-purposes '(ruby-mode . ruby))
+;(add-to-list 'purpose-user-mode-purposes '(inferior-python-mode . py-repl))
+;(purpose-compile-user-configuration)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Remap command and meta keys for macos                            ;;
