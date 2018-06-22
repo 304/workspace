@@ -35,35 +35,24 @@ This function is only necessary in window system."
   (setq interprogram-paste-function nil))
 
 (defun clip-file()
-  "Put the current file name on the clipboard"
+  "Put there current file name on the clipboard"
   (interactive)
   (let ((filename (if (equal major-mode 'dired-mode)
                       (file-name-directory default-directory)
                     (buffer-file-name))))
+
     (when filename
-      (x-select-text
+      (simpleclip-set-contents
        (concat
         (replace-regexp-in-string ".+?/projects/.+?/" "" filename)
         ":"
         (number-to-string (1+ (count-lines 1 (point)))))))))
 
-(defun pasteboard-copy()
-  "Copy region to OS X system pasteboard."
-  (interactive)
-  (shell-command-on-region
-   (region-beginning) (region-end) "pbcopy"))
 
-(defun pasteboard-paste()
-  "Paste from OS X system pasteboard via `pbpaste' to point."
+(defun rspec-clip()
+  "Put the rspec command on the clipboard"
   (interactive)
-  (shell-command-on-region
-   (point) (if mark-active (mark) (point)) "pbpaste" nil t))
-
-(defun pasteboard-cut()
-  "Cut region and put on OS X system pasteboard."
-  (interactive)
-  (pasteboard-copy)
-  (delete-region (region-beginning) (region-end)))
+  (simpleclip-set-contents (concat "be rspec " (clip-file))))
 
 (defun duplicate-current-line-or-region (arg)
   "Duplicates the current line or region ARG times."
@@ -104,25 +93,12 @@ This function is only necessary in window system."
 
 (global-set-key (kbd "C-c C-d") 'duplicate-current-line-or-region)
 (global-set-key (kbd "C-c C-c") 'clip-file)
+(global-set-key (kbd "C-c C-p") 'rspec-clip)
 (global-set-key (kbd "C-c C-g") 'goto-and-recenter)
 (global-set-key (kbd "s-<up>") 'move-text-up)
 (global-set-key (kbd "s-<down>") 'move-text-down)
 (global-set-key (kbd "C-c C-t") 'term)
 
-(if window-system
-    (progn
-      (isolate-kill-ring)
-      ;; bind CMD+C to pasteboard-copy
-      (global-set-key (kbd "s-c") 'pasteboard-copy)
-      ;; bind CMD+V to pasteboard-paste
-      (global-set-key (kbd "s-v") 'pasteboard-paste)
-      ;; bind CMD+X to pasteboard-cut
-      (global-set-key (kbd "s-x") 'pasteboard-cut))
-
-  ;; you might also want to assign some keybindings for non-window
-  ;; system usage (i.e., in your text terminal, where the
-  ;; command->super does not work)
-  )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;  Set font                                                        ;;
@@ -170,6 +146,9 @@ This function is only necessary in window system."
   expand-region
   ace-jump-mode
   fill-column-indicator
+  dimmer
+  simpleclip
+  docker
   yaml-mode))
 
 (dolist (p my-packages)
@@ -426,7 +405,7 @@ This function is only necessary in window system."
  '(magit-diff-use-overlays nil)
  '(package-selected-packages
    (quote
-    (projectile-rails move-text move-line focus-autosave-mode robe markdown-mode elixir-mode window-purpose fill-column-indicator flyspell-correct expand-region mark-multiple color-theme-sanityinc-tomorrow zenburn solarized-theme doom-themes ace-jump-mode smartparens ruby-tools minimap enh-ruby-mode nyan-mode company-flx which-key bundler rspec-mode magit real-auto-save atom-one-dark-theme zenburn-theme dracula-theme yaml-mode ag web-mode sass-mode projectile multiple-cursors monokai-theme ido-vertical-mode haml-mode flx-ido company coffee-mode browse-kill-ring)))
+    (org-journal wgrep-ag ov aes use-package omnibox rbenv projectile-rails move-text move-line focus-autosave-mode robe markdown-mode elixir-mode window-purpose fill-column-indicator flyspell-correct expand-region mark-multiple color-theme-sanityinc-tomorrow zenburn solarized-theme doom-themes ace-jump-mode smartparens ruby-tools minimap enh-ruby-mode nyan-mode company-flx which-key bundler rspec-mode magit real-auto-save atom-one-dark-theme zenburn-theme dracula-theme yaml-mode ag web-mode sass-mode projectile multiple-cursors monokai-theme ido-vertical-mode haml-mode flx-ido company coffee-mode browse-kill-ring)))
  '(projectile-tags-backend (quote etags-select))
  '(projectile-tags-command
    "ctags -Re --extra=+fq --exclude=db --exclude=doc --exclude=log --exclude=tmp --exclude=.git --exclude=public --exclude=node_modules --exclude=vendor .")
@@ -613,7 +592,12 @@ This function is only necessary in window system."
 ;(add-hook 'enh-ruby-mode-hook 'rspec-mode)
 (setq compilation-scroll-output t)
 (setq rspec-use-spring-when-possible nil)
+(setenv "PAGER" (executable-find "cat"))
+(add-hook 'after-init-hook 'inf-ruby-switch-setup)
+;(add-hook 'compilation-filter-hook 'inf-ruby-auto-enter)
 
+(setq inf-ruby-first-prompt-pattern "\\([[0-9]+] \\)?.*([^)]+)")
+(setq inf-ruby-prompt-pattern "\\([[0-9]+] \\)?.*([^)]+)")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Ace-jump-mode                                                    ;;
@@ -682,10 +666,51 @@ This function is only necessary in window system."
 ;(purpose-compile-user-configuration)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Rbenv                                                            ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(require 'rbenv)
+(global-rbenv-mode)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Dimmer                                                           ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(require 'dimmer)
+(dimmer-mode)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; simpleclip                                                       ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(require 'simpleclip)
+(simpleclip-mode 1)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; omnibox                                                          ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; (use-package omnibox
+ ;; :config
+ ;; (global-set-key (kbd "M-x") 'omnibox-M-x)
+ ;; (omnibox-setup))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; docker                                                           ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(docker-global-mode)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; sidebar                                                          ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; (add-to-list 'load-path "~/Library/Fonts/") ;; If it's not already done
+;; (add-to-list 'load-path "~/sidebar.el/")
+;; (require 'sidebar)
+;; (global-set-key (kbd "C-x C-f") 'sidebar-open)
+;; (global-set-key (kbd "C-x C-a") 'sidebar-buffers-open)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Remap command and meta keys for macos                            ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Options: 'control, 'alt, 'meta, 'super, 'hyper
 (setq mac-command-modifier 'meta)
+(setq mac-function-modifier 'control)
 (setq mac-option-modifier 'super)
 
 (custom-set-faces
