@@ -157,7 +157,8 @@ This function is only necessary in window system."
   counsel
   doom-themes
   osx-lib
-  wgrep
+  wgrep-ag
+  babel
   yaml-mode))
 
 (dolist (p my-packages)
@@ -416,6 +417,10 @@ This function is only necessary in window system."
  '(js-indent-level 2)
  '(list-matching-lines-default-context-lines 1)
  '(magit-diff-use-overlays nil)
+ '(org-babel-load-languages (quote ((emacs-lisp . t) (shell . t) (ruby . t))))
+ '(org-confirm-babel-evaluate nil)
+ '(org-export-backends (quote (ascii html icalendar latex md odt confluence)))
+ '(org-todo-keyword-faces (quote (("PROGRESS" . "lightblue") ("WAITING" . "yellow"))))
  '(package-selected-packages
    (quote
     (rubocop zop-to-char ruby-refactor babel org-babel-eval-in-repl htmlize org-bullets counsel-tramp spaceline-all-the-icons swiper swiper-helm avy org-jira moody pdf-tools powerline-evil spaceline eldoc-eval shrink-path org-journal wgrep-ag ov aes use-package omnibox rbenv projectile-rails move-text move-line focus-autosave-mode robe markdown-mode elixir-mode window-purpose fill-column-indicator flyspell-correct expand-region mark-multiple color-theme-sanityinc-tomorrow zenburn solarized-theme doom-themes ace-jump-mode smartparens ruby-tools minimap enh-ruby-mode nyan-mode company-flx which-key bundler rspec-mode magit real-auto-save atom-one-dark-theme zenburn-theme dracula-theme yaml-mode ag web-mode sass-mode projectile multiple-cursors monokai-theme ido-vertical-mode haml-mode flx-ido company coffee-mode browse-kill-ring)))
@@ -779,6 +784,62 @@ Repeated invocations toggle between the two most recently open buffers."
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Go to emacs docs                                                 ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun hrs/visit-emacs-config ()
+  (interactive)
+  (find-file "~/.emacs.d/init.el"))
+
+(defun hrs/visit-remember-notes ()
+  (interactive)
+  (find-file "~/.notes"))
+
+(global-set-key (kbd "C-c e") 'hrs/visit-emacs-config)
+(global-set-key (kbd "C-c n") 'hrs/visit-remember-notes)
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Org-mode                                                         ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(setq org-src-fontify-natively t)
+(setq org-src-tab-acts-natively t)
+(setq org-src-window-setup 'current-window)
+(add-hook 'org-mode-hook 'flyspell-mode)
+
+;; TOOD: set org directory
+;;(setq org-directory "~/")
+
+(defun org-file-path (filename)
+  "Return the absolute address of an org file, given its relative name."
+  (concat (file-name-as-directory org-directory) filename))
+
+(setq org-index-file (org-file-path "Inbox.org"))
+(setq org-work-file (org-file-path "Work.org"))
+(setq org-default-notes-file (org-file-path "Notes.org"))
+(setq org-refile-targets
+      '((org-index-file :maxlevel . 1)
+        (org-work-file :maxlevel . 1)))
+(setq org-archive-location
+      (concat (org-file-path "archive.org") "::* From %s"))
+
+(setq org-agenda-files (list org-index-file))
+(setq org-log-done 'time)
+
+(define-key global-map "\C-cl" 'org-store-link)
+(define-key global-map "\C-ca" 'org-agenda)
+(define-key global-map "\C-cc" 'org-capture)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Highlight TODO/FIXMES                                            ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun my/highlight-todo-like-words ()
+  (font-lock-add-keywords
+   nil `(("\\<\\(FIXME\\|TODO\\)"
+          1 font-lock-warning-face t))))
+
+(add-hook 'prog-mode-hook 'my/highlight-todo-like-words)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Doom themes                                                      ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (require 'doom-themes)
@@ -823,8 +884,8 @@ Repeated invocations toggle between the two most recently open buffers."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(font-lock-string-face ((((class color) (min-colors 88) (background light)) (:foreground "Forest Green")))))
-
+ '(font-lock-string-face ((((class color) (min-colors 88) (background light)) (:foreground "Forest Green"))))
+ '(font-lock-warning-face ((t (:foreground "#F6D55C" :weight bold)))))
 
 
 
