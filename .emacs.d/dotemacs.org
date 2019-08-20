@@ -11,10 +11,173 @@
      (add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/"))
    #+END_SRC
 
-** Iniitialize packages
+** Bootstrap use-package
 
    #+BEGIN_SRC emacs-lisp
-     (package-initialize)
+     (unless (package-installed-p 'use-package)
+       (package-refresh-contents)
+       (package-install 'use-package)
+       (eval-when-compile (require 'use-package)))
+
+
+     (setq use-package-always-ensure t)
+   #+END_SRC
+
+** Improve garbage collector
+   #+BEGIN_SRC emacs-lisp
+     (setq gc-cons-threshold 20000000)
+
+     ;; Restore after startup
+     (add-hook 'after-init-hook
+               (lambda ()
+                 (setq gc-cons-threshold 2000000)
+                 (message "gc-cons-threshold restored to %S"
+                          gc-cons-threshold)))
+   #+END_SRC
+
+** Open Emacs Config
+   #+BEGIN_SRC emacs-lisp
+     (defun visit-emacs-config ()
+       (interactive)
+       (find-file "~/.emacs.d/dotemacs.org"))
+
+     (global-set-key (kbd "C-c e") 'visit-emacs-config)
+   #+END_SRC
+** Default configurations
+
+   Remove splash screen
+
+   #+BEGIN_SRC emacs-lisp
+
+     (setq inhibit-splash-screen t)
+
+   #+END_SRC
+
+   Remap keys for Mac
+
+   #+BEGIN_SRC emacs-lisp
+     (setq mac-command-modifier 'meta)
+     (setq mac-function-modifier 'control)
+     (setq mac-option-modifier 'super)
+   #+END_SRC
+
+   Confirmation to exit Emacs
+
+   #+BEGIN_SRC emacs-lisp
+     (setq confirm-kill-emacs 'y-or-n-p)
+   #+END_SRC
+
+   Disable scrollbar and toolbar
+
+   #+BEGIN_SRC emacs-lisp
+     (scroll-bar-mode -1)
+     (tool-bar-mode -1)
+   #+END_SRC
+
+   Use meta key for buffers switch
+   #+BEGIN_SRC emacs-lisp
+     (windmove-default-keybindings 'meta)
+   #+END_SRC
+
+   Load env variables
+   #+BEGIN_SRC emacs-lisp
+     (use-package exec-path-from-shell
+       :config
+       (exec-path-from-shell-initialize))
+   #+END_SRC
+
+   Disable *Messages* Buffer
+
+   #+BEGIN_SRC emacs-lisp
+     (setq-default message-log-max nil)
+   #+END_SRC
+
+   Disable *Completion* Buffer
+
+   #+BEGIN_SRC emacs-lisp
+     (add-hook 'minibuffer-exit-hook
+               '(lambda ()
+                  (let ((buffer "*Completions*"))
+                    (and (get-buffer buffer)
+                         (kill-buffer buffer)))))
+   #+END_SRC
+
+   Use IBuffer
+
+   #+BEGIN_SRC emacs-lisp
+     (global-set-key (kbd "C-x C-b") 'ibuffer)
+     (autoload 'ibuffer "ibuffer" "List buffers." t)
+   #+END_SRC
+
+   Disable Dialog Box
+
+   #+BEGIN_SRC emacs-lisp
+     (setq use-dialog-box nil)
+   #+END_SRC
+
+   UTF-8 Configuration
+
+   #+BEGIN_SRC emacs-lisp
+     (set-terminal-coding-system 'utf-8)
+     (set-keyboard-coding-system 'utf-8)
+     (prefer-coding-system 'utf-8)
+     (setenv "LANG" "en_US.UTF-8")
+   #+END_SRC
+
+   Make the yes or no prompts shorter.
+
+   #+BEGIN_SRC emacs-lisp
+     (fset 'yes-or-no-p 'y-or-n-p)
+   #+END_SRC
+
+   Show line numbers
+
+   #+BEGIN_SRC emacs-lisp
+     (global-linum-mode t)
+   #+END_SRC
+
+   Add /usr/local/bin to exec-path
+   #+BEGIN_SRC emacs-lisp
+     (add-to-list 'exec-path "/usr/local/bin")
+   #+END_SRC
+
+   Show column number on Mode Line
+
+   #+BEGIN_SRC emacs-lisp
+     (setq column-number-mode t)
+   #+END_SRC
+
+   Highlight line
+
+   #+BEGIN_SRC emacs-lisp
+     (global-hl-line-mode t)
+   #+END_SRC
+
+   Auto-refresh buffers
+
+   #+BEGIN_SRC emacs-lisp
+     (global-auto-revert-mode t)
+   #+END_SRC
+
+   Highlight parenthesis
+
+   #+BEGIN_SRC emacs-lisp
+     (show-paren-mode 1)
+     (setq show-paren-style 'parenthesis)
+   #+END_SRC
+
+   General Indentation
+
+   #+BEGIN_SRC emacs-lisp
+     (setq-default indent-tabs-mode nil)
+   #+END_SRC
+
+   Display time
+
+   #+BEGIN_SRC emacs-lisp
+     (setq display-time-day-and-date t
+           display-time-24hr-format t)
+     (display-time)
    #+END_SRC
 
 ** Copy and Paste for OSX
@@ -105,7 +268,7 @@
 
 ** Set font
    #+BEGIN_SRC emacs-lisp
-     (set-default-font "Monaco 12")
+     (set-frame-font "Monaco 12" nil t)
      (global-set-key (kbd "C-+") 'text-scale-increase)
      (global-set-key (kbd "C--") 'text-scale-decrease)
    #+END_SRC
@@ -168,168 +331,8 @@
          (package-install p)))
 
    #+END_SRC
-** Default configurations
 
-   Remove splash screen
 
-   #+BEGIN_SRC emacs-lisp
-
-     (setq inhibit-splash-screen t)
-
-   #+END_SRC
-
-   Confirmation to exit Emacs
-
-   #+BEGIN_SRC emacs-lisp
-     (setq confirm-kill-emacs 'y-or-n-p)
-   #+END_SRC
-
-   Disable scrollbar
-
-   #+BEGIN_SRC emacs-lisp
-     (scroll-bar-mode -1)
-   #+END_SRC
-
-   Load env variables
-   #+BEGIN_SRC emacs-lisp
-     (when (memq window-system '(mac ns x))
-       (exec-path-from-shell-initialize))
-   #+END_SRC
-
-   Disable *Messages* Buffer
-
-   #+BEGIN_SRC emacs-lisp
-     (setq-default message-log-max nil)
-   #+END_SRC
-
-   Disable *Completion* Buffer
-
-   #+BEGIN_SRC emacs-lisp
-     (add-hook 'minibuffer-exit-hook
-               '(lambda ()
-                  (let ((buffer "*Completions*"))
-                    (and (get-buffer buffer)
-                         (kill-buffer buffer)))))
-   #+END_SRC
-
-   Use IBuffer
-
-   #+BEGIN_SRC emacs-lisp
-     (global-set-key (kbd "C-x C-b") 'ibuffer)
-     (autoload 'ibuffer "ibuffer" "List buffers." t)
-   #+END_SRC
-
-   Disable Dialog Box
-
-   #+BEGIN_SRC emacs-lisp
-     (setq use-dialog-box nil)
-   #+END_SRC
-
-   UTF-8 Configuration
-
-   #+BEGIN_SRC emacs-lisp
-     (set-terminal-coding-system 'utf-8)
-     (set-keyboard-coding-system 'utf-8)
-     (prefer-coding-system 'utf-8)
-     (setenv "LANG" "en_US.UTF-8")
-   #+END_SRC
-
-   Simple Yes-or-no
-
-   #+BEGIN_SRC emacs-lisp
-     (fset 'yes-or-no-p 'y-or-n-p)
-   #+END_SRC
-
-   Show line numbers
-
-   #+BEGIN_SRC emacs-lisp
-     (global-linum-mode t)
-   #+END_SRC
-
-   Add /usr/local/bin to exec-path
-   #+BEGIN_SRC emacs-lisp
-     (add-to-list 'exec-path "/usr/local/bin")
-   #+END_SRC
-
-   Show column number on Mode Line
-
-   #+BEGIN_SRC emacs-lisp
-     (setq column-number-mode t)
-   #+END_SRC
-
-   Highlight line
-
-   #+BEGIN_SRC emacs-lisp
-     (global-hl-line-mode t)
-   #+END_SRC
-
-   Auto-refresh buffers
-
-   #+BEGIN_SRC emacs-lisp
-     (global-auto-revert-mode t)
-   #+END_SRC
-
-   Highlight parenthesis
-
-   #+BEGIN_SRC emacs-lisp
-     (show-paren-mode 1)
-     (setq show-paren-style 'parenthesis)
-   #+END_SRC
-
-   General Identation
-
-   #+BEGIN_SRC emacs-lisp
-     (setq-default indent-tabs-mode nil)
-   #+END_SRC
-
-   Display time
-
-   #+BEGIN_SRC emacs-lisp
-     (setq display-time-day-and-date t
-           display-time-24hr-format t)
-     (display-time)
-   #+END_SRC
-
-   Remove tool-bar
-
-   #+BEGIN_SRC emacs-lisp
-     (tool-bar-mode -99)
-   #+END_SRC
-
-** Ruby
-
-   #+BEGIN_SRC emacs-lisp
-     (setq ruby-insert-encoding-magic-comment nil)
-
-     (eval-after-load "hideshow"
-       '(add-to-list 'hs-special-modes-alist
-                     `(ruby-mode
-                       ,(rx (or "def" "class" "module" "{" "["))
-                       ,(rx (or "}" "]" "end"))
-                       ,(rx (or "#" "=begin"))
-                       ruby-forward-sexp nil)))
-   #+END_SRC
-
-   Fix identation
-
-   #+BEGIN_SRC emacs-lisp
-     (setq ruby-deep-indent-paren nil)
-   #+END_SRC
-
-** JS
-
-   Fix identation
-
-   #+BEGIN_SRC emacs-lisp
-     (setq js-deep-indent-paren nil)
-   #+END_SRC
-
-   #+BEGIN_SRC emacs-lisp
-     (setq js-mode-hook
-           (function (lambda ()
-                       (setq indent-tabs-mode nil)
-                       (setq c-indent-level 2))))
-   #+END_SRC
 
 ** Full screen
    #+BEGIN_SRC emacs-lisp
@@ -397,9 +400,10 @@
 
 ** Which key
    #+BEGIN_SRC emacs-lisp
-     (require 'which-key)
-     (which-key-mode)
-     (which-key-setup-side-window-right)
+     (use-package which-key
+       :config
+       (which-key-mode)
+       (which-key-setup-side-window-right))
    #+END_SRC
 
 ** Bundler
@@ -413,11 +417,6 @@
 ** Remove trailing whitespace
    #+BEGIN_SRC emacs-lisp
      (add-hook 'before-save-hook 'delete-trailing-whitespace)
-   #+END_SRC
-
-** Improve garbage collector
-   #+BEGIN_SRC emacs-lisp
-     (setq gc-cons-threshold 20000000)
    #+END_SRC
 
 ** Start server
@@ -439,20 +438,123 @@
      (setq ido-use-faces nil)
    #+END_SRC
 
-** Projectile
-   #+BEGIN_SRC emacs-lisp
-     (projectile-global-mode)
-     (setq projectile-enable-caching t)
-     (setq projectile-switch-project-action 'projectile-dired)
-     (setq tags-add-tables nil)
-   #+END_SRC
+** Coding
+*** Elixir
 
-** Web-Mode
+    Alchemist
 
-   #+BEGIN_SRC emacs-lisp
-     (require 'web-mode)
-     (add-to-list 'auto-mode-alist '("\\.erb\\'" . web-mode))
-   #+END_SRC
+    #+BEGIN_SRC emacs-lisp
+      (require 'alchemist)
+      (setq alchemist-mix-test-task "espec")
+      (setq alchemist-goto-elixir-source-dir "~/.asdf/installs/elixir/1.8/")
+
+      (defun alchemist-utils-test-file-p ()
+        "Return non-nil `current-buffer' holds an Elixir test file."
+        (string-match "_spec\\.exs$" (or (buffer-file-name) "")))
+    #+END_SRC
+
+*** Ruby
+
+    #+BEGIN_SRC emacs-lisp
+      (setq ruby-insert-encoding-magic-comment nil)
+
+      (eval-after-load "hideshow"
+        '(add-to-list 'hs-special-modes-alist
+                      `(ruby-mode
+                        ,(rx (or "def" "class" "module" "{" "["))
+                        ,(rx (or "}" "]" "end"))
+                        ,(rx (or "#" "=begin"))
+                        ruby-forward-sexp nil)))
+    #+END_SRC
+
+    Fix identation
+
+    #+BEGIN_SRC emacs-lisp
+      (setq ruby-deep-indent-paren nil)
+    #+END_SRC
+
+*** JS
+
+    Fix identation
+
+    #+BEGIN_SRC emacs-lisp
+      (setq js-deep-indent-paren nil)
+    #+END_SRC
+
+    #+BEGIN_SRC emacs-lisp
+      (setq js-mode-hook
+            (function (lambda ()
+                        (setq indent-tabs-mode nil)
+                        (setq c-indent-level 2))))
+    #+END_SRC
+
+*** Ruby-Tools
+    #+BEGIN_SRC emacs-lisp
+      (require 'ruby-tools)
+      (add-hook 'ruby-mode-hook 'ruby-tools-mode)
+    #+END_SRC
+
+*** Web-Mode
+
+    #+BEGIN_SRC emacs-lisp
+      (require 'web-mode)
+      (add-to-list 'auto-mode-alist '("\\.erb\\'" . web-mode))
+    #+END_SRC
+
+*** Rspec-Mode
+
+
+    #+BEGIN_SRC emacs-lisp
+      (require 'rspec-mode)
+      (add-hook 'ruby-mode-hook 'rspec-mode)
+                                              ;(add-hook 'enh-ruby-mode-hook 'rspec-mode)
+      (setq compilation-scroll-output t)
+      (setq rspec-use-spring-when-possible nil)
+      (setenv "PAGER" (executable-find "cat"))
+      (add-hook 'after-init-hook 'inf-ruby-switch-setup)
+                                              ;(add-hook 'compilation-filter-hook 'inf-ruby-auto-enter)
+
+      (setq inf-ruby-first-prompt-pattern "\\([[0-9]+] \\)?.*([^)]+)")
+      (setq inf-ruby-prompt-pattern "\\([[0-9]+] \\)?.*([^)]+)")
+    #+END_SRC
+
+*** Rbenv
+    #+BEGIN_SRC emacs-lisp
+      (require 'rbenv)
+      (global-rbenv-mode)
+    #+END_SRC
+
+*** Slim mode
+
+    #+BEGIN_SRC emacs-lisp
+
+      (require 'slim-mode)
+      (add-to-list 'auto-mode-alist '("\\.slime\\'" . slim-mode))
+
+    #+END_SRC
+
+*** Rubocop
+    #+BEGIN_SRC emacs-lisp
+      (require 'rubocop)
+      (add-hook 'ruby-mode-hook #'rubocop-mode)
+    #+END_SRC
+
+*** Agressive indent
+    #+BEGIN_SRC emacs-lisp
+      (use-package aggressive-indent)
+    #+END_SRC
+
+*** Projectile
+    #+BEGIN_SRC emacs-lisp
+      (use-package projectile
+        :init
+        (setq projectile-enable-caching t)
+        (setq projectile-switch-project-action 'projectile-dired)
+        (setq tags-add-tables nil)
+        :config
+        (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+        (projectile-mode +1))
+    #+END_SRC
 
 ** Company Mode
 
@@ -474,10 +576,8 @@
    #+END_SRC
 
 ** Neo Tree
-   #+BEGIN_SRC emacs-lisp
-     (require 'neotree)
-     (setq neo-smart-open t)
 
+   #+BEGIN_SRC emacs-lisp
      (defun switch-to-previous-buffer ()
        "Switch to previously open buffer.
      Repeated invocations toggle between the two most recently open buffers."
@@ -489,41 +589,25 @@
        (funcall 'neotree-projectile-action)
        (funcall 'switch-to-previous-buffer))
 
-
-     (setq projectile-switch-project-action 'smart-projectile-action)
-     (global-set-key (kbd "C-|") 'neotree-show)
-     (global-set-key [f8] 'neotree-toggle)
    #+END_SRC
 
-** Ruby-Tools
    #+BEGIN_SRC emacs-lisp
-     (require 'ruby-tools)
-     (add-hook 'ruby-mode-hook 'ruby-tools-mode)
-   #+END_SRC
-
-** Rspec-Mode
-
-
-   #+BEGIN_SRC emacs-lisp
-     (require 'rspec-mode)
-     (add-hook 'ruby-mode-hook 'rspec-mode)
-                                             ;(add-hook 'enh-ruby-mode-hook 'rspec-mode)
-     (setq compilation-scroll-output t)
-     (setq rspec-use-spring-when-possible nil)
-     (setenv "PAGER" (executable-find "cat"))
-     (add-hook 'after-init-hook 'inf-ruby-switch-setup)
-                                             ;(add-hook 'compilation-filter-hook 'inf-ruby-auto-enter)
-
-     (setq inf-ruby-first-prompt-pattern "\\([[0-9]+] \\)?.*([^)]+)")
-     (setq inf-ruby-prompt-pattern "\\([[0-9]+] \\)?.*([^)]+)")
+     (use-package neotree
+       :init
+       (setq neo-smart-open t)
+       (setq projectile-switch-project-action 'smart-projectile-action)
+       :config
+       (global-set-key [f8] 'neotree-toggle)
+       (global-set-key (kbd "C-|") 'neotree-show))
    #+END_SRC
 
 ** Ace jump
 
    #+BEGIN_SRC emacs-lisp
-     (global-set-key (kbd "C-c C-j") 'ace-jump-mode)
-     (global-set-key (kbd "M-m") 'ace-jump-mode)
-     (setq ace-jump-mode-case-fold t)
+     (use-package ace-jump-mode
+       :bind ("M-m" . ace-jump-mode)
+       :init
+       (setq ace-jump-mode-case-fold t))
    #+END_SRC
 
 ** Multiple-cursors
@@ -535,7 +619,8 @@
 ** Expand region
 
    #+BEGIN_SRC emacs-lisp
-     (global-set-key (kbd "C-@") 'er/expand-region)
+     (use-package expand-region
+       :bind ("C-@" . er/expand-region))
    #+END_SRC
 
 ** Fill column indication
@@ -560,12 +645,6 @@
 ** Projectile Rails
    #+BEGIN_SRC emacs-lisp
      (projectile-rails-global-mode)
-   #+END_SRC
-
-** Rbenv
-   #+BEGIN_SRC emacs-lisp
-     (require 'rbenv)
-     (global-rbenv-mode)
    #+END_SRC
 
 ** Dimmer
@@ -618,15 +697,6 @@
      (define-key minibuffer-local-map (kbd "C-r") 'counsel-minibuffer-history)
    #+END_SRC
 
-** Open Emacs Config
-   #+BEGIN_SRC emacs-lisp
-     (defun visit-emacs-config ()
-       (interactive)
-       (find-file "~/.emacs.d/init.el"))
-
-     (global-set-key (kbd "C-c e") 'visit-emacs-config)
-   #+END_SRC
-
 ** Doom Themes
    #+BEGIN_SRC emacs-lisp
      (require 'doom-themes)
@@ -640,12 +710,6 @@
      (use-package org-bullets
        :init
        (add-hook 'org-mode-hook #'org-bullets-mode))
-   #+END_SRC
-
-** Rubocop
-   #+BEGIN_SRC emacs-lisp
-     (require 'rubocop)
-     (add-hook 'ruby-mode-hook #'rubocop-mode)
    #+END_SRC
 
 ** Org Settings
@@ -705,29 +769,6 @@
      (setq doom-modeline-minor-modes nil)
    #+END_SRC
 
-** Elixir
-
-   Alchemist
-
-   #+BEGIN_SRC emacs-lisp
-     (require 'alchemist)
-     (setq alchemist-mix-test-task "espec")
-     (setq alchemist-goto-elixir-source-dir "~/.asdf/installs/elixir/1.8/")
-
-     (defun alchemist-utils-test-file-p ()
-       "Return non-nil `current-buffer' holds an Elixir test file."
-       (string-match "_spec\\.exs$" (or (buffer-file-name) "")))
-   #+END_SRC
-
-** Slim mode
-
-   #+BEGIN_SRC emacs-lisp
-
-     (require 'slim-mode)
-     (add-to-list 'auto-mode-alist '("\\.slime\\'" . slim-mode))
-
-   #+END_SRC
-
 ** Highlight todo words
    #+BEGIN_SRC emacs-lisp
      (defun my/highlight-todo-like-words ()
@@ -736,14 +777,6 @@
                1 font-lock-warning-face t))))
 
      (add-hook 'prog-mode-hook 'my/highlight-todo-like-words)
-   #+END_SRC
-
-** Remap meta keys
-
-   #+BEGIN_SRC emacs-lisp
-     (setq mac-command-modifier 'meta)
-     (setq mac-function-modifier 'control)
-     (setq mac-option-modifier 'super)
    #+END_SRC
 
 ** Backups
@@ -788,12 +821,12 @@
        (when buffer-file-name (save-buffer)))
    #+END_SRC
 
-
 ** Magit configuration
 
    #+BEGIN_SRC emacs-lisp
-     (global-set-key (kbd "s-m") nil)
-     (global-set-key (kbd "C-c g") 'magit-status)
-     (global-set-key (kbd "C-c f") 'magit-log-buffer-file)
-     (global-set-key (kbd "C-c b") 'magit-blame)
+     (use-package magit
+       :bind (("s-m" . nil)
+              ("C-c g" . magit-status)
+              ("C-c f" . magit-log-buffer-file)
+              ("C-c b" . magit-blame)))
    #+END_SRC
