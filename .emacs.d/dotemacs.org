@@ -757,3 +757,8 @@
               ("C-c f" . magit-log-buffer-file)
               ("C-c b" . magit-blame)))
    #+END_SRC
+** Zoom window
+   #+BEGIN_SRC emacs-lisp
+     (use-package zoom-window
+       :bind ("C-x C-z" . zoom-window-zoom))
+   #+END_SRC
