@@ -297,7 +297,6 @@
       '(font-lock-string-face ((((class color) (min-colors 88) (background light)) (:foreground "Forest Green"))))
       '(font-lock-warning-face ((t (:foreground "#F6D55C" :weight bold)))))
    #+END_SRC
-
 * Coding
 ** Elixir
 
@@ -632,9 +631,21 @@
 ** Org Settings
 
    #+BEGIN_SRC emacs-lisp
+     (use-package org
+       :bind (:map org-mode-map
+                   ("<M-left>" . nil)
+                   ("<M-right>" . nil)
+                   ("<M-up>" . nil)
+                   ("<M-down>" . nil)
+                   ("<C-left>" . org-metaleft)
+                   ("<C-right>" . org-metaright)
+                   ("<C-up>" . org-metaup)
+                   ("<C-down>" . org-metadown)))
+
      (setq org-src-fontify-natively t)
      (setq org-src-tab-acts-natively t)
      (setq org-src-window-setup 'current-window)
+     (setq org-support-shift-select t)
      (add-hook 'org-mode-hook 'flyspell-mode)
 
      (setq org-todo-keyword-faces
