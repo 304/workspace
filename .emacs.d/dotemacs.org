@@ -489,7 +489,9 @@
 
 ** Nyan mode
    #+BEGIN_SRC emacs-lisp
-     (use-package nyan-mode)
+     (use-package nyan-mode
+       :init
+       (nyan-mode))
    #+END_SRC
 ** Neo Tree
 
