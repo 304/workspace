@@ -238,8 +238,6 @@
      (global-set-key (kbd "C-c C-c") 'clip-file)
      (global-set-key (kbd "C-c C-p") 'rspec-clip)
      (global-set-key (kbd "C-c C-g") 'goto-and-recenter)
-     (global-set-key (kbd "s-<up>") 'move-text-up)
-     (global-set-key (kbd "s-<down>") 'move-text-down)
      (global-set-key (kbd "C-c C-t") 'term)
    #+END_SRC
 
@@ -456,7 +454,10 @@
 * Useful packages
 ** Move-text
    #+BEGIN_SRC emacs-lisp
-     (use-package move-text)
+     (use-package move-text
+       :init
+       (global-set-key (kbd "s-<up>") 'move-text-up)
+       (global-set-key (kbd "s-<down>") 'move-text-down))
    #+END_SRC
 ** Which key
    #+BEGIN_SRC emacs-lisp
