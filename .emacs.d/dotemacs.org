@@ -2,12 +2,12 @@
 #+AUTHOR: Vasiliy
 #+TOC: true
 #+DATE: <2019-08-15 Thu>
+#+STARTUP: overview
 * Setup
 ** Configure package sources
 
    #+BEGIN_SRC emacs-lisp
      (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-     (add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/"))
    #+END_SRC
 
 ** Bootstrap use-package
@@ -563,8 +563,8 @@
 ** Docker
    #+BEGIN_SRC emacs-lisp
      (use-package docker
-       :config
-       (docker-global-mode))
+       :ensure t
+       :bind ("C-c d" . docker))
 
      (use-package dockerfile-mode
        :mode "Dockerfile\\'")
@@ -593,7 +593,6 @@
        :config
        (ivy-mode 1)
        (setq ivy-use-virtual-buffers t)
-       (setq enable-recursive-minibuffers t)
        (global-set-key "\C-s" 'swiper)
        (global-set-key (kbd "C-c C-r") 'ivy-resume)
        (global-set-key (kbd "<f6>") 'ivy-resume)
@@ -609,6 +608,8 @@
 
 ** Doom Themes
    #+BEGIN_SRC emacs-lisp
+     (use-package all-the-icons)
+
      (use-package doom-themes
        :config
        (doom-themes-neotree-config)
@@ -629,7 +630,6 @@
    #+END_SRC
 
 ** Org Settings
-
    #+BEGIN_SRC emacs-lisp
      (use-package org
        :bind (:map org-mode-map
@@ -637,8 +637,9 @@
                    ("<M-right>" . nil)
                    ("<M-up>" . nil)
                    ("<M-down>" . nil)
-                   ("<C-left>" . org-metaleft)
-                   ("<C-right>" . org-metaright)
+                   ;; Disable MissionControl keybindings
+                   ("<C-left>" . org-do-promote)
+                   ("<C-right>" . org-do-demote)
                    ("<C-up>" . org-metaup)
                    ("<C-down>" . org-metadown)))
 
@@ -694,11 +695,12 @@
 
 ** Doom Modeline
    #+BEGIN_SRC emacs-lisp
-     (require 'doom-modeline)
-     (doom-modeline-mode 1)
-
-     (setq doom-modeline-major-mode-color-icon 't)
-     (setq doom-modeline-minor-modes nil)
+     (use-package doom-modeline
+       :ensure t
+       :init (doom-modeline-mode 1)
+       :config
+       (setq doom-modeline-major-mode-color-icon 't)
+       (setq doom-modeline-minor-modes nil))
    #+END_SRC
 
 ** Highlight todo words
