@@ -715,9 +715,19 @@
        (flycheck-mode -1)
        (end-of-buffer))
 
+     (defun open-notes-file ()
+       "Open the notes list."
+       (interactive)
+       (find-file (org-file-path "Notes.org"))
+       (flycheck-mode -1)
+       (end-of-buffer))
+
+
      (global-set-key (kbd "C-c o") 'open-index-file)
      (global-set-key (kbd "C-c w") 'open-work-file)
-   #+END_SRC
+     (global-set-key (kbd "C-c n") 'open-notes-file)
+
+     #+END_SRC
 *** Don't add blank lines
    #+begin_src emacs-lisp
      (setq org-blank-before-new-entry (quote ((heading . nil)
