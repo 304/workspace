@@ -24,14 +24,34 @@
 
 ** Improve garbage collector
    #+BEGIN_SRC emacs-lisp
-     (setq gc-cons-threshold 20000000)
+     ;; The default is 800 kilobytes.  Measured in bytes.
+     (setq gc-cons-threshold (* 50 1000 1000))
 
-     ;; Restore after startup
-     (add-hook 'after-init-hook
+     ;; Profile emacs startup
+     (add-hook 'emacs-startup-hook
                (lambda ()
-                 (setq gc-cons-threshold 2000000)
-                 (message "gc-cons-threshold restored to %S"
-                          gc-cons-threshold)))
+                 (message "*** Emacs loaded in %s with %d garbage collections."
+                          (format "%.2f seconds"
+                                  (float-time
+                                   (time-subtract after-init-time before-init-time)))
+                          gcs-done)))
+   #+END_SRC
+
+** Keep emacs.d clean
+   #+BEGIN_SRC emacs-lisp
+     ;; Change the user-emacs-directory to keep unwanted things out of ~/.emacs.d
+     (setq user-emacs-directory (expand-file-name "~/.cache/emacs/")
+           url-history-file (expand-file-name "url/history" user-emacs-directory))
+
+     ;; Use no-littering to automatically set common paths to the new user-emacs-directory
+     (use-package no-littering)
+
+     ;; Keep customization settings in a temporary file (thanks Ambrevar!)
+     (setq custom-file
+           (if (boundp 'server-socket-dir)
+               (expand-file-name "custom.el" server-socket-dir)
+             (expand-file-name (format "emacs-custom-%s.el" (user-uid)) temporary-file-directory)))
+     (load custom-file t)
    #+END_SRC
 
 ** Open Emacs Config
@@ -48,6 +68,7 @@
     #+BEGIN_SRC emacs-lisp
 
       (setq inhibit-splash-screen t)
+      (setq inhibit-startup-message t)
 
     #+END_SRC
 *** Remap keys for Mac
@@ -464,7 +485,8 @@
      (use-package which-key
        :config
        (which-key-mode)
-       (which-key-setup-side-window-right))
+       (which-key-setup-side-window-right)
+       (setq which-key-idle-delay 0.3))
    #+END_SRC
 ** Company Mode
    #+BEGIN_SRC emacs-lisp
