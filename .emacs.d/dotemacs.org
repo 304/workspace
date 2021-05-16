@@ -618,6 +618,7 @@
        :config
        (ivy-mode 1)
        (setq ivy-use-virtual-buffers t)
+       (setq ivy-count-format "(%d/%d) ")
        (global-set-key "\C-s" 'swiper)
        (global-set-key (kbd "C-c C-r") 'ivy-resume)
        (global-set-key (kbd "<f6>") 'ivy-resume)
@@ -717,6 +718,19 @@
      (global-set-key (kbd "C-c o") 'open-index-file)
      (global-set-key (kbd "C-c w") 'open-work-file)
    #+END_SRC
+*** Don't add blank lines
+   #+begin_src emacs-lisp
+     (setq org-blank-before-new-entry (quote ((heading . nil)
+                                              (plain-list-item . nil))))
+   #+end_src
+
+*** Expand templates
+    Org-tempo is a package that allows for ‘<s’ followed by TAB to expand to a begin_src tag.
+
+    #+BEGIN_SRC emacs-lisp
+      (use-package org-tempo
+        :ensure nil) ;; tell use-package not to try to install org-tempo since it's already there.
+    #+END_SRC
 
 ** Doom Modeline
    #+BEGIN_SRC emacs-lisp
