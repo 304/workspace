@@ -824,3 +824,20 @@
      (use-package zoom-window
        :bind ("C-x C-z" . zoom-window-zoom))
    #+END_SRC
+** Git-link
+   #+BEGIN_SRC emacs-lisp
+     (use-package git-link
+       :ensure t
+       :bind (("C-c l" . git-link))
+       :init
+       (setq git-link-use-commit t)
+       (setq git-link-open-in-browser t))
+   #+END_SRC
+** Folding
+   #+BEGIN_SRC emacs-lisp
+     (use-package yafolding
+       :init
+       (add-hook 'ruby-mode-hook 'yafolding-mode))
+
+     (global-set-key (kbd "M-RET")   'yafolding-toggle-element)
+   #+END_SRC
