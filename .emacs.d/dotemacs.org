@@ -664,8 +664,8 @@
                    ("<M-up>" . nil)
                    ("<M-down>" . nil)
                    ;; Disable MissionControl keybindings
-                   ("<C-left>" . org-do-promote)
-                   ("<C-right>" . org-do-demote)
+                   ("C-<" . org-do-promote)
+                   ("C->" . org-do-demote)
                    ("<C-up>" . org-metaup)
                    ("<C-down>" . org-metadown)))
 
@@ -694,7 +694,7 @@
      (setq org-archive-location
            (concat (org-file-path "archive.org") "::* From %s"))
 
-     (setq org-agenda-files (list org-index-file))
+     (setq org-agenda-files (list org-index-file org-work-file))
      (setq org-log-done 'time)
 
      (define-key global-map "\C-cl" 'org-store-link)
