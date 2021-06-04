@@ -18,6 +18,7 @@
 
 [alias]
     lg = log --graph '--pretty=tformat:%Cblue%h%Creset %Cgreen%ar%Creset %Cblue%d%Creset %s'
+    recent = branch --sort=-committerdate --format=\"%(committerdate:relative)%09%(refname:short)\"
 
 [user]
 	name = Vasiliy Yakliushin
